@@ -78,10 +78,7 @@ def devtools_rendering(opt: DevToolsRendering):
 def devtools_appearance(opt: DevToolsAppearance):
     devtools_command_palette(appearance_opts[opt])
 
-
-
 def devtools_inspect():
-    # devtools_customize()
     rpa.hotkey("ctrl", "shift", "c")
 
 def devtools_command_palette(cmd):
@@ -91,7 +88,6 @@ def devtools_command_palette(cmd):
 
 def devtools_command_palette_open():
     rpa.hotkey("ctrl", "shift", "p", interval=0.25)
-
 
 
 def copy(text):
@@ -116,28 +112,19 @@ def console_paste(x):
 
 
 # https://developers.google.com/web/tools/chrome-devtools/console/utilities 
-def inspect_element(x, y):
+def devtools_inspect_element_at(x, y):
     devtools_inspect()
     console('function xpathFromElement(e){var n=e;if(n.id)return\'//*[@id="\'+n.id+\'"]\';for(var r=[];n&&n.nodeType===Node.ELEMENT_NODE;){for(var i=0,o=!1,a=n.previousSibling;a;)a.nodeType!==Node.DOCUMENT_TYPE_NODE&&a.nodeName===n.nodeName&&i++,a=a.previousSibling;for(a=n.nextSibling;a;){if(a.nodeName===n.nodeName){o=!0;break}a=a.nextSibling}var d=n.prefix?n.prefix+":":"",N=i||o?"["+(i+1)+"]":"";r.push(d+n.localName+N),n=n.parentNode}return r.length?"/"+r.reverse().join("/"):""}')
     console_paste("$0")
-    # _ = rpa.screenshot("command_result1.png")
-    # time.sleep(2)
     rpa.press("enter")
-    # _ = rpa.screenshot("command_result2.png")
-    # time.sleep(2)
 
     console("copy(xpathFromElement($0))")
     xpath_selector = paste()
-    # time.sleep(2)
 
     devtools_command_palette("show elements")
     rpa.hotkey("ctrl", "f")
     rpa.typewrite(xpath_selector)
-    # _ = rpa.screenshot("xpath_inspect_result1.png") 
-    # time.sleep(4)
     rpa.press("enter")
-    # _ = rpa.screenshot("xpath_inspect_result2.png") 
-    # time.sleep(4)
     
     return xpath_selector
 
@@ -152,24 +139,17 @@ try:
     devtools_inspect()
 
     # hover and click on some element at x,y
-    rpa.moveTo(280, 290, 2, rpa.easeInOutQuad, logScreenshot=True)
+    rpa.moveTo(280, 290, 2, rpa.easeInOutQuad)
     
     # get the current position of the mouse
     x, y = rpa.position()
-    # location = rpa.locateOnScreen('/home/ubuntu/dev/rpa_browser/images/console.png')
-
-    # point = rpa.center(location)
-    # x, y = point
     rpa.click(x, y)
 
     # inspect the element at current mouse position
-    xpath_selector = inspect_element(x, y)
+    xpath_selector = devtools_inspect_element_at(x, y)
     print(f"This is xpath... {xpath_selector}")
     rpa.moveTo(380, 390, 2, rpa.easeInOutQuad)
     rpa.moveTo(280, 290, 2, rpa.easeInOutQuad)
-    # rpa.screenshot('inspect_element1.png')
-    
-    # time.sleep(4)
 
 except rpa.ImageNotFoundException as e:
     raise e
